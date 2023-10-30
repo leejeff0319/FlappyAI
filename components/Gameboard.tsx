@@ -22,7 +22,7 @@ const Gameboard = () => {
   const maxRotation = 25;
   let tilt: number;
   let rotationVelocity: number = 20;
-  let animationTime: number = 5;
+  let animationTime: number = 20 / speed;
   const birdImgPaths = ["/TWT/bird1.png", "/TWT/bird2.png", "/TWT/bird3.png"]
   let tickCount: number = 0;
   let imgCount: number = 0;
@@ -93,25 +93,31 @@ const Gameboard = () => {
     }
   }, []);
 
-  let imgTick = 0; 
+  // At the top of your component, near other variable declarations:
+  let birdImgSequence = [0, 1, 2, 1]; // Defines the sequence
+  let imgSequenceIndex = 0;  // Current position in the sequence
+  let frameCount = 0;
 
   function update() {
     requestAnimationFrame(update);
     if (gameOver) {
       return;
     }
-    flap();
     context.clearRect(0, 0, board.width, board.height);
+
+    frameCount++;  // Increment frame count
+    if (frameCount % animationTime === 0) {  // Change bird image every 'animationTime' frames
+      imgSequenceIndex = (imgSequenceIndex + 1) % birdImgSequence.length;  // Cycle through birdImgSequence
+      imgCount = birdImgSequence[imgSequenceIndex];
+    }
 
     // bird
     velocityY += gravity;
-    // bird.y += velocityY;
-    bird.y = Math.max(bird.y + velocityY, 0); // bird cannot go further than top of the board
-    
-    if (birdImg[imgCount]) {
-      context.drawImage(birdImg[imgCount], bird.x, bird.y, bird.width, bird.height)
-    }
+    bird.y = Math.max(bird.y + velocityY, 0);  // bird cannot go further than top of the board
 
+    if (birdImg[imgCount]) {
+      context.drawImage(birdImg[imgCount], bird.x, bird.y, bird.width, bird.height);
+    }
 
     if (bird.y > board.height) {
       gameOver = true;
@@ -216,31 +222,7 @@ const Gameboard = () => {
     tickCount = 0;
   }
 
-  function flap() {
-    imgTick++;
 
-    if (imgTick < animationTime) {
-      imgCount = 0;
-    }
-    if (imgTick < animationTime * 2) {
-      imgCount = 1;
-    }
-    if (imgTick < animationTime * 3) {
-      imgCount = 2;
-    }
-    if (imgTick < animationTime * 4) {
-      imgCount = 1;
-    }
-    if (imgTick < animationTime * 4 + 1) {
-      imgCount = 0;
-      imgTick = 0;
-    }
-
-    // if (tilt <= -80) {
-      // imgCount = 1;
-      // imgTick = animationTime *2;
-    // }
-  }
 
   function detectCollision(a: { x: any; y: any; width: any; height: any; }, b: { x: number; width: any; y: number; height: any; }) {
     return a.x < b.x + b.width &&
