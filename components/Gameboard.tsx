@@ -223,7 +223,8 @@ const Gameboard = () => {
     return a.x < b.x + b.width &&
       a.x + a.width > b.x &&
       a.y < b.y + b.height &&
-      a.y + a.height > b.y;
+      a.y + a.height > b.y||
+    (a.y + a.height > boardHeight - 75);
   }
 
   return (
@@ -234,6 +235,7 @@ const Gameboard = () => {
         style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}
         className="w-full h-full">
       </canvas>
+      <div style= {{width:'360px', marginTop:'-70px'}}id='base' className = 'absolute h-20'></div>
     </div>
   )
 }

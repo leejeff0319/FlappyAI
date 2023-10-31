@@ -10,3 +10,7 @@ body{
 #game{
   background-image: url("/KYC/flappybirdbg.png");
 }
+
+#base {
+  background-image: url("/TWT/base.png");
+}
