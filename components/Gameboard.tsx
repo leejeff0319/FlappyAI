@@ -21,11 +21,9 @@ const Gameboard = () => {
   // Bird Tilt & Flapping
   let tilt: number;
   const MAX_ROTATION = 25; // Maximum rotation upwards
-  const ROT_VEL = 20 * speed; // Rotation velocity
   let animationTime: number = 20 / speed;
   const birdImgPaths = ["/TWT/bird1.png", "/TWT/bird2.png", "/TWT/bird3.png"]
   let imgCount: number = 0;
-
 
   let bird = {
     x: birdX,
@@ -48,7 +46,7 @@ const Gameboard = () => {
   // Game Physics
   let velocityX: number = -0.5 * speed; // Pipes moving left at 2px / 4
   let velocityY: number = 0; // Bird jump speed
-  let gravity: number = 0.03  * speed *12/17;
+  let gravity: number = 0.035 * speed * 12 / 17;
 
   // Game State
   let gameOver: boolean = false;
@@ -94,6 +92,8 @@ const Gameboard = () => {
   let birdImgSequence = [0, 1, 2, 1]; // Defines the sequence
   let imgSequenceIndex = 0;  // Current position in the sequence
   let frameCount = 0;
+  let tiltDelay: number = 70; // This is the number of frames the bird will maintain the 25-degree tilt after jumping. You can adjust this value as needed.
+  let tiltFrameCount: number = 0;
 
   function update() {
     requestAnimationFrame(update);
@@ -113,7 +113,24 @@ const Gameboard = () => {
     bird.y = Math.max(bird.y + velocityY, 0);  // bird cannot go further than top of the board
 
     if (birdImg[imgCount]) {
-      context.drawImage(birdImg[imgCount], bird.x, bird.y, bird.width, bird.height);
+      context.save(); // Save the current context state
+  
+      context.translate(bird.x + bird.width / 2, bird.y + bird.height / 2); // Move origin to bird's center
+
+      if (velocityY < 0 || tiltFrameCount < (tiltDelay/speed) ) {
+        context.rotate(-Math.PI / 7.2);  // Rotate upwards by 25 degrees (which is approximately Math.PI / 7.2 in radians)
+      } else {
+        let downwardRotation = Math.min(velocityY/(2), Math.PI / 2); // Gradual increase until 90 degrees
+        context.rotate(downwardRotation);
+      }
+
+      context.drawImage(birdImg[imgCount], -bird.width / 2, -bird.height / 2, bird.width, bird.height); // Draw bird at new origin
+
+      context.restore(); // Restore the context state to before the bird drawing
+    }
+
+    if (velocityY < 0) {
+      tiltFrameCount++; // Increment the frame count when the bird is moving upwards
     }
 
     if (bird.y > board.height) {
@@ -197,8 +214,9 @@ const Gameboard = () => {
   }
 
   function jump() {
-    velocityY = -1.5;
-  }
+    velocityY = -2;
+    tiltFrameCount = 0; 
+}
 
 
   function detectCollision(a: { x: any; y: any; width: any; height: any; }, b: { x: number; width: any; y: number; height: any; }) {
