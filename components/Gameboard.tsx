@@ -12,19 +12,18 @@ const Gameboard = () => {
   let context: CanvasRenderingContext2D;
 
   // Bird
-  let birdWidth: number = 51; // width/height ratio = 408/228 = 17/12
-  let birdHeight: number = 36;
+  let birdWidth: number = 68; // width/height ratio = 408/228 = 17/12
+  let birdHeight: number = 48;
   let birdX: number = boardWidth / 8;
   let birdY: number = boardHeight / 2;
   const birdImg: CanvasImageSource[] = [];
 
   // Bird Tilt & Flapping
-  const maxRotation = 25;
   let tilt: number;
-  let rotationVelocity: number = 20;
+  const MAX_ROTATION = 25; // Maximum rotation upwards
+  const ROT_VEL = 20 * speed; // Rotation velocity
   let animationTime: number = 20 / speed;
   const birdImgPaths = ["/TWT/bird1.png", "/TWT/bird2.png", "/TWT/bird3.png"]
-  let tickCount: number = 0;
   let imgCount: number = 0;
 
 
@@ -33,9 +32,7 @@ const Gameboard = () => {
     y: birdY,
     width: birdWidth,
     height: birdHeight,
-    tilt: 0,
-    tickCount: tickCount,
-    rotationVelocity: rotationVelocity,
+    tilt: 0
   }
 
   // Pipes
@@ -51,7 +48,7 @@ const Gameboard = () => {
   // Game Physics
   let velocityX: number = -0.5 * speed; // Pipes moving left at 2px / 4
   let velocityY: number = 0; // Bird jump speed
-  let gravity: number = 0.02 * speed;
+  let gravity: number = 0.03  * speed *12/17;
 
   // Game State
   let gameOver: boolean = false;
@@ -187,25 +184,7 @@ const Gameboard = () => {
     if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyX") {
       // jump
       jump();
-
-      // Rotation
-      let d = velocityY * tickCount + 1.5 * tickCount ** 2;
-      if (d >= 16) {
-        d = 4;
-      }
-
-      if (d < 0) {
-        d -= 0.5;
-      }
-
-      if (d < 0 || bird.y < birdY + 12.5) {
-        if (bird.tilt < maxRotation) {
-          bird.tilt = -maxRotation;
-        }
-        if (bird.tilt < -90) {
-          bird.tilt -= rotationVelocity;
-        }
-      }
+      bird.tilt = MAX_ROTATION;
 
       // reset game
       if (gameOver) {
@@ -219,9 +198,7 @@ const Gameboard = () => {
 
   function jump() {
     velocityY = -1.5;
-    tickCount = 0;
   }
-
 
 
   function detectCollision(a: { x: any; y: any; width: any; height: any; }, b: { x: number; width: any; y: number; height: any; }) {
