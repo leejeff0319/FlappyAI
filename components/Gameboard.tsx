@@ -1,6 +1,5 @@
 'use client';
-import React from 'react'
-import { useEffect } from 'react'
+import React, { useEffect }from 'react'
 
 const Gameboard = () => {
   let speed: number = 1;
