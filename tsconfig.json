@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/FlappyBirdAI/Node.js", "components/FlappyBirdAI/Bird.js", "components/FlappyBirdAI/GENOME.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/FlappyBirdAI/Node.js", "components/FlappyBirdAI/Bird.js", "components/FlappyBirdAI/GENOME.js", "components/NEAT/bird.js", "components/NEAT/Pipe.js", "components/NEAT/sketch.js"],
   "exclude": ["node_modules"]
 }
